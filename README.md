@@ -29,25 +29,16 @@ You will also need to have permission to use AWS CloudFormation (https://aws.ama
 ### Architecture
 As part of the solution, the following services are used:
 
-1. ![Amazon S3](https://aws.amazon.com/s3/): Used to store datasets.
-2. ![Amazon SageMaker Notebook](https://aws.amazon.com/sagemaker/): Used to preprocess and visualize the data, and to train the deep learning model.
+1. [Amazon S3](https://aws.amazon.com/s3/): Used to store datasets.
+2. [Amazon SageMaker Notebook](https://aws.amazon.com/sagemaker/): Used to preprocess and visualize the data, and to train the deep learning model.
 3. Amazon SageMaker Reinforcement Learning ?? Ray/Rllib?
 
 ### Cost
 
 You will be given credits to use any AWS service, please contact AICrowd for details. 
 
-You are responsible for the cost of the AWS services used while running this solution. 
+You are responsible for the cost of the AWS services used while running this solution. For details refer to the pricing listed at [Amazon SageMaker Pricing](https://aws.amazon.com/sagemaker/pricing/)
 
-For details on Amazon SageMaker pricing refer to the pricing examples at ![](https://aws.amazon.com/sagemaker/pricing/)
-
-As of August 31st 2020 in the US West (Oregon) region, the cost to:
-
-1. train the model using Amazon SageMaker training job on ml.c5.4xlarge is $ per hour and on spot instance is $ per hour. 
-2. run an Amazon SageMaker notebook instance 
- * on ml.c5.4xlarge and debug locally is $ per hour.
- * on and debug via AWS CloudWatch is $ per hour.
- 
  
 ### Launch the solution
 ​
