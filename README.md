@@ -47,8 +47,9 @@ While logged on to your AWS account, click on the link to quick create the AWS C
   </tr>
 </table>
 ​
-The above link will take you to the AWS CloudFormation page to create a stack as seen in the screen shot below:
-![ScreenshotCloudformation](https://github.com/aws-samples/sagemaker-rl-procgen-ray/blob/master/cloudstack_snaphot.png)
+The above link will take you to the AWS CloudFormation page to create a stack as seen in the screen shot below.
+
+![](https://github.com/aws-samples/sagemaker-rl-procgen-ray/blob/master/cloudstack_snaphot.png)
 
 You should acknowledge the use of the instance type for Amazon SageMaker Notebook and Training Instance. Make sure that your AWS account has the limits for required instances. If you need to increase the limits for the instances you wish to use, please contact AWS Support.
 
