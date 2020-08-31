@@ -69,7 +69,7 @@ You should acknowledge the use of the instance type for Amazon SageMaker Noteboo
 
 The final parameter is the name of the S3 bucket for the solution. The default is `procgen`. Please, provide a unique name for this to ensure there are no conflicts with your existing S3 buckets.
 
-Now, click 'Create Stack'. You can monitor the progress of your stack by clicking `Event` tab or refreshing your screen. Once stack creation has completed successfully, go to the Amazon SageMaker console. You notebook should already be created and its status should read `InService`. 
+Now, click `Create Stack`. You can monitor the progress of your stack by clicking `Event` tab or refreshing your screen. Once stack creation has completed successfully, go to the Amazon SageMaker console. You notebook should already be created and its status should read `InService`. 
 
 You are now ready to start training!
 
