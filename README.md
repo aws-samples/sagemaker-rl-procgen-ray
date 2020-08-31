@@ -18,8 +18,7 @@ These environments are associated with the paper [Leveraging Procedural Generati
 * Customizable: If you install from source, you can perform experiments where you change the environments, or build your own environments.  The environment-specific code for each environment is often less than 300 lines.  This is almost impossible with Gym Retro.
 
 # 💪 Getting Started with Amazon SageMaker 
-​
-​
+
 ### Get an AWS account
 ​
 You will need an AWS account to use this solution. Sign up for an account here (https://aws.amazon.com/).
@@ -62,7 +61,7 @@ While logged on to your AWS account, click on the link to quick create the AWS C
 ​
 The above link will take you to the AWS CloudFormation page to create a stack as seen in the screen shot below.
 
-<img src="cloudstack_snaphot.png" height="256">
+<img src="cloudstack_snaphot.png" height="512">
 
 You should acknowledge the use of the instance type for Amazon SageMaker Notebook and Training Instance. Make sure that your AWS account has the limits for required instances. If you need to increase the limits for the instances you wish to use, please contact AWS Support.
 
