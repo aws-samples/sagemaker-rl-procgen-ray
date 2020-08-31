@@ -5,7 +5,7 @@ Amazon SageMaker is a fully managed service that enables you to build and deploy
 ​
 For more information, see Amazon SageMaker Experiments – Organize, Track And Compare Your Machine Learning Trainings. For more information about applying RL to domains such as recommendation systems, robotics, financial management, and more, see the [GitHub repo](https://github.com/awslabs/amazon-sagemaker-examples/tree/master/reinforcement_learning).
 ​
-# ��️ About ProcGen Benchmark
+# 🕵️ About ProcGen Benchmark
 ​
 16 simple-to-use procedurally-generated [gym](https://github.com/openai/gym) environments which provide a direct measure of how quickly a reinforcement learning agent learns generalizable skills.  The environments run at high speed (thousands of steps per second) on a single core.
 ​
@@ -18,7 +18,7 @@ These environments are associated with the paper [Leveraging Procedural Generati
 * Customizable: If you install from source, you can perform experiments where you change the environments, or build your own environments.  The environment-specific code for each environment is often less than 300 lines.  This is almost impossible with Gym Retro.
 ​
 ​
-# �� Getting Started
+# 💪 Getting Started with Amazon SageMaker 
 ​
 ​
 ### Get an AWS account
@@ -28,7 +28,7 @@ You will also need to have permission to use AWS CloudFormation (https://aws.ama
 ​
 ### Launch the solution
 ​
-Click on one of the following buttons to quick create the AWS CloudFormation Stack:
+While logged on to your AWS account, click on the link to quick create the AWS CloudFormation Stack for the region you want to run your notebook:
 ​
 <table>
   <tr>
@@ -47,9 +47,24 @@ Click on one of the following buttons to quick create the AWS CloudFormation Sta
   </tr>
 </table>
 ​
-You should acknowledge the use of the two capabilities and click 'Create Stack'. Once stack creation has completed successfully, you could start training the model with `train.ipynb`.
+The above link will take you to the AWS CloudFormation page to create a stack as seen in the screen shot below:
+![ScreenshotCloudformation](cloudstack_snaphot.png)
 
-# �� Submission [Same as in NeurIPS 2020 - Procgen competition]
+You should acknowledge the use of the instance type for Amazon SageMaker Notebook and Training Instance. Make sure that your AWS account has the limits for required instances. If you need to increase the limits for the instances you wish to use, please contact AWS Support.
+
+The final parameter is the name of the S3 bucket for the solution. The default is `procgen`. Please, provide a unique name for this to ensure there are no conflicts with your existing S3 buckets.
+
+Now, click 'Create Stack'. You can monitor the progress of your stack by clicking `Event` tab or refreshing your screen. Once stack creation has completed successfully, go to the Amazon SageMaker console. You notebook should already be created and its status should read `InService`. 
+
+You are now ready to start training!
+
+### Training
+
+To start training the model, go to Amazon SageMaker > Notebook instances > rl-procgen-neurips and click `Open Jupyter` or `Open JupyterLab` tab. Then, click on the  notebook named `train.ipynb`.
+
+
+
+# Submission [Same as in NeurIPS 2020 - Procgen competition]
 ​
 Same as in [NeurIPS 2020 - Procgen competition](https://www.aicrowd.com/challenges/neurips-2020-procgen-competition) hosted on [AIcrowd](https://www.aicrowd.com/).
 ​
@@ -57,10 +72,10 @@ Happy Submitting!! :rocket:
 ​
 ​
 # Author(s)
-- [Jonathan Chung](https://github.com/jonomon)
 - [Anna Luo]()
-- [Yunzhe Tao]()
-- [Sahika Genc]()
+- [Jonathan Chung](https://github.com/jonomon)
+- [Yunzhe Tao](https://github.com/yunzhe-tao)
+- [Sahika Genc](https://github.com/sahikagenc)
 - [Sharada Mohanty](https://twitter.com/MeMohanty/)
 - [Karl Cobbe](https://github.com/kcobbe)
 - [Jyotish](https://github.com/jyotishp)
