@@ -29,7 +29,13 @@ As part of the solution, the following services are used:
 
 1. [Amazon S3](https://aws.amazon.com/s3/): Used to store datasets.
 2. [Amazon SageMaker Notebook](https://aws.amazon.com/sagemaker/): Used to preprocess and visualize the data, and to train the deep learning model.
-3. Amazon SageMaker Reinforcement Learning ?? Ray/Rllib?
+
+Amazon SageMaker Reinforcement Learning utilizes Amazon S3, Amazon SageMaker, and ...
+
+A typical Amazon SageMaker Reinforcement Learning job for an actro-critic algorithm will use GPU instances to learning a policy network and CPU instances to collect experiences for faster training at optimized costs. Amazon SageMaker allows you to achieve this by spinning up two jobs within the same Amazon VPC, and the communications between the instances are taken care of automatically. The following diagram illustrates the architecture in which the primary job consumes one GPU instance and the secondary job consumes three CPU instances.
+
+<img src="docs/BattleSnake-RL-4.png" height="512">
+
 
 ### Cost
 
@@ -66,7 +72,7 @@ While logged on to your AWS account, click on the link to quick create the AWS C
 ​
 The above link will take you to the AWS CloudFormation page to create a stack as seen in the screen shot below.
 
-<img src="cloudstack_snaphot.png" height="512">
+<img src="docs/cloudstack_snaphot.png" height="512">
 
 You should acknowledge the use of the instance type for Amazon SageMaker Notebook and Training Instance. Make sure that your AWS account has the limits for required instances. If you need to increase the limits for the instances you wish to use, please contact AWS Support.
 
@@ -106,7 +112,6 @@ Step 3: You need to make sure that your Ray training job is configured to use th
 
 To automatically scale the RL training to several workers, you can adjust the `num_cpus` and `num_gpus` parameters. You must reserve 1 CPU (the 1 in num_cpus - 1) to act as the driver. For example, if you select a training instance type with at least 4 CPUs, then configure a training job with multiple workers in a single Amazon SageMaker instance by settting 'num_cpus' = 3 and 'num_gpus' = 0.
 
-
 ## How do I use homogeneous or heteregenous distributed training?
 
 ## How do I use spot instances for distributed training?
@@ -122,10 +127,20 @@ Please refer [here](https://github.com/AIcrowd/neurips2020-procgen-starter-kit/b
 ## What configs parameters do I have available ? 
 
 
+## How do I visualize the algorithm metrics while training ?
+
+
+Option 1 (Amazon CloudWatch): Visit the [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) metrics dashboard to monitor and visualize the metrics. The training jobs details page now has a direct link to the Amazon CloudWatch metrics dashboard for the metrics emitted by the training algorithm.
+
+Option 2 (Amazon SageMaker Python SDK API): You can also visualize the metrics inline in your Amazon SageMaker Jupyter notebooks using the Amazon SageMaker Python SDK APIs. Please, refer to the section titled *Visualize algorithm metrics for training* in `train.ipynb`.
+
+
+Option 3: Tensorboard ... 
+
 
 
 # Author(s)
-- [Anna Luo]()
+- [Anna Luo](https://github.com/annaluo676)
 - [Jonathan Chung](https://github.com/jonomon)
 - [Yunzhe Tao](https://github.com/yunzhe-tao)
 - [Sahika Genc](https://github.com/sahikagenc)
