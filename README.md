@@ -104,6 +104,8 @@ Step 2: In `train.ipynb`, go to the section titled *Configure training instance 
 
 Step 3: You need to make sure that your Ray training job is configured to use the resources in the training instance. Go to `source\train-sagemaker.py`. Edit ...
 
+To automatically scale the RL training to several workers, you can adjust the `num_cpus` and `num_gpus` parameters. You must reserve 1 CPU (the 1 in num_cpus - 1) to act as the driver. For example, if you select a training instance type with at least 4 CPUs, then configure a training job with multiple workers in a single Amazon SageMaker instance by settting 'num_cpus' = 3 and 'num_gpus' = 0.
+
 
 ## How do I use homogeneous or heteregenous distributed training?
 
