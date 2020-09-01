@@ -34,7 +34,7 @@ Amazon SageMaker Reinforcement Learning utilizes Amazon S3, Amazon SageMaker, an
 
 A typical Amazon SageMaker Reinforcement Learning job for an actro-critic algorithm will use GPU instances to learning a policy network and CPU instances to collect experiences for faster training at optimized costs. Amazon SageMaker allows you to achieve this by spinning up two jobs within the same Amazon VPC, and the communications between the instances are taken care of automatically. The following diagram illustrates the architecture in which the primary job consumes one GPU instance and the secondary job consumes three CPU instances.
 
-<img src="docs/BattleSnake-RL-4.gif" height="256">
+<img src="docs/BattleSnake-RL-4.gif" height="400">
 
 
 ### Cost
@@ -128,9 +128,10 @@ Please refer [here](https://github.com/AIcrowd/neurips2020-procgen-starter-kit/b
 
 
 ## How do I visualize the algorithm metrics while training ?
+There are several options to visualize algorithm metrics. A detailed blog can be found [here](https://aws.amazon.com/blogs/machine-learning/easily-monitor-and-visualize-metrics-while-training-models-on-amazon-sagemaker/).
 
 
-Option 1 (Amazon CloudWatch): Visit the [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) metrics dashboard to monitor and visualize the metrics. The training jobs details page now has a direct link to the Amazon CloudWatch metrics dashboard for the metrics emitted by the training algorithm.
+Option 1 (Amazon CloudWatch): You can go to the [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) metrics dashboard from your account to monitor and visualize the algorithm metrics as well as track the GPU and CPU usage. The training jobs details page has a direct link to the Amazon CloudWatch metrics dashboard for the metrics emitted by the training algorithm.
 
 Option 2 (Amazon SageMaker Python SDK API): You can also visualize the metrics inline in your Amazon SageMaker Jupyter notebooks using the Amazon SageMaker Python SDK APIs. Please, refer to the section titled *Visualize algorithm metrics for training* in `train.ipynb`.
 
