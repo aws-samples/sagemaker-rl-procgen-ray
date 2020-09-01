@@ -34,7 +34,7 @@ Amazon SageMaker Reinforcement Learning utilizes Amazon S3, Amazon SageMaker, an
 
 A typical Amazon SageMaker Reinforcement Learning job for an actro-critic algorithm will use GPU instances to learning a policy network and CPU instances to collect experiences for faster training at optimized costs. Amazon SageMaker allows you to achieve this by spinning up two jobs within the same Amazon VPC, and the communications between the instances are taken care of automatically. The following diagram illustrates the architecture in which the primary job consumes one GPU instance and the secondary job consumes three CPU instances.
 
-<img src="docs/BattleSnake-RL-4.png" height="512">
+<img src="docs/BattleSnake-RL-4.gif" height="512">
 
 
 ### Cost
