@@ -35,12 +35,12 @@ As part of the solution, the following services are used:
 
 You will be given credits to use any AWS service, please contact AICrowd for details. 
 
-You are responsible for the cost of the AWS services used while running this solution. For details refer to the pricing listed at [Amazon SageMaker Pricing](https://aws.amazon.com/sagemaker/pricing/)
+You are responsible for the cost of the AWS services used while running this solution. For details refer to the pricing listed at [Amazon SageMaker Pricing](https://aws.amazon.com/sagemaker/pricing/).
 
-As of September 1, 2020, the Amazon SageMaker training cost (excluding notebook instance):
+As of September 1, 2020, the Amazon SageMaker training cost (excluding notebook instance) are listed as:
 * ml.c5.4xlarge	$0.952 per hour
-* ml.p3.2xlarge	$4.284 per hour
 * ml.g4dn.4xlarge	$1.686 per hour
+* ml.p3.2xlarge	$4.284 per hour
 
  
 ### Launch the solution
@@ -93,9 +93,17 @@ Happy Submitting!! :rocket:
 # FAQs
 
 ## How do I change the notebook instance type?
-The Amazon SageMaker notebook instance type is configured as part of the cloud formation parameters. If you wish to change the instance type, you would need to change the parameter for the notebook instance.
+The Amazon SageMaker notebook instance type is configured as part of the cloud formation parameters. The default instance type in the cloud formation stack is `ml.c5.4xlarge`. If you wish to change the instance type, you would need to change the parameter for the notebook instance. This instance type enables you to run your notebook in `local mode` to quickly test your custom model, parameters, or algorithms in the notebook instance. We recommended that once you debug customizations, then you can switch to a notebook instance with smaller compute and use powerful compute instances to iterate through various hyper-parameters in training.
 
-The default instance type in the cloud formation stack is `ml.c5.4xlarge`. This instance type enables you to run your notebook in `local mode` to quickly test your custom model, parameters, or algorithms in the notebook instance. We recommended that once you debug customizations, then you can switch to a notebook instance with smaller compute and use powerful compute instances to iterate through various hyper-parameters in training.
+## How do I change the training instance type(s)?
+You can change the instance type to a GPU or CPU instance. In the notebook, the docker container is selected according to the type of the instance, e.g., the GPU instances start with `ml.p` or `ml.g`. There are there steps to configuring the instance type for training:
+
+Step 1: Prior to changing the instance type you need to confirm that your AWS account limit for the specific instance. Please, refer to the instructions on the [Amazon EC2 Service Quotas](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html) on how to confirm the instance limits.
+
+Step 2: In `train.ipynb`, go to the section titled *Configure training instance type* and override `instance_type`.
+
+Step 3: You need to make sure that your Ray training job is configured to use the resources in the training instance. Go to `source\train-sagemaker.py`. Edit ...
+
 
 ## How do I use homogeneous or heteregenous distributed training?
 
