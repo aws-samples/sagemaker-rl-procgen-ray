@@ -44,9 +44,9 @@ You will be given credits to use any AWS service, please contact AICrowd for det
 You are responsible for the cost of the AWS services used while running this solution. For details refer to the pricing listed at [Amazon SageMaker Pricing](https://aws.amazon.com/sagemaker/pricing/).
 
 As of September 1, 2020, the Amazon SageMaker training cost (excluding notebook instance) are listed as:
-* ml.c5.4xlarge	$0.952 per hour
-* ml.g4dn.4xlarge	$1.686 per hour
-* ml.p3.2xlarge	$4.284 per hour
+* ml.c5.4xlarge	$0.952 per hour (16 vCPU)
+* ml.g4dn.4xlarge	$1.686 per hour (1 GPU, 16 vCPU)
+* ml.p3.2xlarge	$4.284 per hour (1 GPU, 8 vCPU)
 
  
 ### Launch the solution
