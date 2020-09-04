@@ -20,7 +20,7 @@ These environments are associated with the paper [Leveraging Procedural Generati
 # 💪 Getting Started with Amazon SageMaker 
 
 ### Get an AWS account
-​
+
 You will need an AWS account to use this solution. Sign up for an account here (https://aws.amazon.com/).
 You will also need to have permission to use AWS CloudFormation (https://aws.amazon.com/cloudformation/) and to create all the resources detailed in the architecture section (https://github.com/awslabs/aws-fleet-predictive-maintenance/#architecture). All AWS permissions can be managed through AWS IAM (https://aws.amazon.com/iam/). Admin users will have the required permissions, but please contact your account's AWS administrator if your user account doesn't have the required permissions.
 
@@ -48,9 +48,9 @@ As of September 1, 2020, the Amazon SageMaker training cost (excluding notebook 
 * ml.g4dn.4xlarge	$1.686 per hour (1 GPU, 16 vCPU)
 * ml.p3.2xlarge	$4.284 per hour (1 GPU, 8 vCPU)
 
- 
+
 ### Launch the solution
-​
+
 While logged on to your AWS account, click on the link to quick create the AWS CloudFormation Stack for the region you want to run your notebook:
 ​
 <table>
@@ -63,13 +63,14 @@ While logged on to your AWS account, click on the link to quick create the AWS C
     <td>Oregon</td>
     <td>us-west-2</td>
     <td align="center">
-      <a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create/review?templateURL=https://sagemaker-solutions-us-west-2.s3-us-west-2.amazonaws.com/rl-procgen-neurips/cloudformation/sagemaker.yaml&stackName=sagemaker-solutions-rl-procgen-neuips">
+      <a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create/review?templateURL=https://sagemaker-solutions-us-west-2.s3-us-west-2.amazonaws.com/rl-procgen-neurips/cloudformation/sagemaker.yaml&stackName=sm-soln-rl-procgen-neuips">
         <img src="docs/launch_button.svg" height="30">
       </a>
     </td>
   </tr>
 </table>
-​
+
+
 The above link will take you to the AWS CloudFormation page to create a stack as seen in the screen shot below.
 
 <img src="docs/cloudstack_snapshot_dist.png" height="512">
@@ -90,7 +91,7 @@ To start training the model, go to Amazon SageMaker > Notebook instances > rl-pr
 
 
 # Submission [Same as in NeurIPS 2020 - Procgen competition]
-​
+
 Same as in [NeurIPS 2020 - Procgen competition](https://www.aicrowd.com/challenges/neurips-2020-procgen-competition) hosted on [AIcrowd](https://www.aicrowd.com/).
 ​
 Happy Submitting!! :rocket:

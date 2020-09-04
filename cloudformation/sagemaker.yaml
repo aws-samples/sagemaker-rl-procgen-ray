@@ -1,0 +1,348 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "(SA0010) - rl-procgen-neurips: Solution for training deep reinforcement learning models for openAI gym environments using Amazon SageMaker. Version 1"
+Parameters:
+  S3BucketName:
+    Description: Enter the name of the S3 bucket for the solution
+    Type: String
+    Default: "neurips-procgen"
+  SageMakerNotebookInstanceType:
+    Description: Instance type of the SageMaker notebook instance
+    Type: String
+    Default:  "ml.c5.4xlarge"
+    AllowedValues:
+      - ml.c5.4xlarge
+      - ml.c5.9xlarge
+      - ml.t3.medium
+  SageMakerCPUTrainingInstanceType:
+    Description: CPU Instance type of the SageMaker training jobs
+    Type: String
+    Default:  "ml.c5.4xlarge"
+    AllowedValues:
+      - ml.c5.4xlarge
+      - ml.c5.9xlarge
+  SageMakerGPUTrainingInstanceType:
+    Description: GPU Instance type of the SageMaker heterogeneous training jobs
+    Type: String
+    Default:  "ml.p3.2xlarge"
+    AllowedValues:
+      - ml.p3.2xlarge
+      - ml.g4dn.4xlarge
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: S3 Configuration
+        Parameters:
+          - SolutionS3BucketName
+      -
+        Label:
+          default: SageMaker Configuration
+        Parameters:
+          - SageMakerNotebookInstanceType
+          - SageMakerTrainingInstanceType
+    ParameterLabels:
+      SolutionS3BucketName:
+        default: Bucket Name
+      SageMakerNotebookInstanceType:
+        default: SageMaker Notebook Instance
+      SageMakerCPUTrainingInstanceType:
+        default: SageMaker CPU Training Instance
+      SageMakerGPUTrainingInstanceType:
+        default: SageMaker GPU Training Instance
+
+Mappings:
+  S3:
+    SolutionRef:
+      Bucket: "sagemaker-solutions-${AWS::Region}"
+  Notebook:
+    Source:
+      S3Key: "rl-procgen-neurips/sagemaker"
+      
+Resources:
+  SolutionAssistant:
+    Type: "Custom::SolutionAssistant"
+    Properties:
+      ServiceToken: !GetAtt SolutionAssistantLambda.Arn
+      S3BucketName: !Ref S3Bucket
+      
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: "Retain"
+    Properties:
+      BucketName:
+        !Sub "sm-soln-${S3BucketName}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          -
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W35
+            reason: Configuring logging requires supplying an existing customer S3 bucket to store logs
+          - id: W51
+            reason: Default access policy suffices
+            
+  SolutionAssistantLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: "lambda.handler"
+      FunctionName: "rl-procgen-neurips-solution-assistant"
+      Role: !GetAtt SolutionAssistantLambdaRole.Arn
+      Runtime: "python3.8"
+      Code:
+        S3Bucket: !Sub "sagemaker-solutions-${AWS::Region}"
+        S3Key: "rl-procgen-neurips/build/solution-assistant.zip"
+      Timeout : 60
+
+  SolutionAssistantLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: SagemakerBucketAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource:
+                - !Sub "arn:aws:s3:::sagemaker-solutions-${AWS::Region}"
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource:
+                - !Sub "arn:aws:s3:::sagemaker-solutions-${AWS::Region}/*"
+            - Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource:
+                - !Sub "arn:aws:s3:::${S3Bucket}"
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:DeleteObject
+              Resource:
+                - !Sub "arn:aws:s3:::${S3Bucket}/*"
+
+  NotebookInstanceExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - sagemaker.amazonaws.com
+            Action:
+            - 'sts:AssumeRole'
+            
+  NotebookInstanceIAMPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: rl-procgen-neurips-notebook-instance-policy
+      Roles:
+        - !Ref NotebookInstanceExecutionRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+            - sagemaker:ListTrainingJobs
+            - sagemaker:ListModels
+          Resource:
+            - '*'
+        - Effect: Allow
+          Action:
+          - sagemaker:CreateTrainingJob
+          - sagemaker:DescribeTrainingJob
+          - sagemaker:CreateProcessingJob
+          - sagemaker:DescribeProcessingJob
+          - sagemaker:CreateModel
+          - sagemaker:DescribeEndpointConfig
+          - sagemaker:DescribeEndpoint
+          - sagemaker:CreateEndpointConfig
+          - sagemaker:CreateEndpoint
+          - sagemaker:DeleteEndpointConfig
+          - sagemaker:DeleteEndpoint
+          - sagemaker:DeleteModel
+          - sagemaker:InvokeEndpoint
+          Resource:
+          - !Sub "arn:aws:sagemaker:${AWS::Region}:${AWS::AccountId}:*"
+        - Effect: Allow
+          Action:
+            - ecr:GetAuthorizationToken
+          Resource:
+            - "*"
+        - Effect: Allow
+          Action:
+            - ecr:GetDownloadUrlForLayer
+            - ecr:BatchGetImage
+          Resource:
+            - "*"
+        - Effect: Allow
+          Action:
+            - ecr:BatchCheckLayerAvailability
+            - ecr:CreateRepository
+            - ecr:DescribeRepositories
+            - ecr:InitiateLayerUpload
+            - ecr:CompleteLayerUpload
+            - ecr:UploadLayerPart
+            - ecr:TagResource
+            - ecr:PutImage
+          Resource:
+            - !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/*"
+        - Effect: Allow
+          Action:
+          - cloudwatch:PutMetricData
+          - cloudwatch:GetMetricData
+          - cloudwatch:GetMetricStatistics
+          - cloudwatch:ListMetrics
+          Resource:
+          - "*"
+        - Effect: Allow
+          Action:
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          - logs:DescribeLogStreams
+          - logs:GetLogEvents
+          - logs:PutLogEvents
+          Resource:
+          - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/sagemaker/*"
+        - Effect: Allow
+          Action:
+          - iam:PassRole
+          Resource:
+          - !GetAtt NotebookInstanceExecutionRole.Arn
+          Condition:
+            StringEquals:
+              iam:PassedToService: sagemaker.amazonaws.com
+        - Effect: Allow
+          Action:
+          - iam:GetRole
+          Resource:
+          - !GetAtt NotebookInstanceExecutionRole.Arn
+        - Effect: Allow
+          Action:
+          - s3:ListBucket
+          - s3:GetObject
+          - s3:PutObject
+          - s3:DeleteObject
+          Resource:
+            - !Sub "arn:aws:s3:::sm-soln-${S3BucketName}"
+            - !Sub "arn:aws:s3:::sm-soln-${S3BucketName}/*"
+        - Effect: Allow
+          Action:
+          - s3:ListBucket
+          - s3:GetObject
+          - s3:PutObject
+          - s3:DeleteObject
+          Resource:
+          - !Sub "arn:aws:s3:::sagemaker-solutions-${AWS::Region}"
+          - !Sub "arn:aws:s3:::sagemaker-solutions-${AWS::Region}/*"
+        - Effect: Allow
+          Action:
+          - ec2:DescribeVpcs
+          - ec2:DescribeSecurityGroups
+          - ec2:DescribeSubnets
+          - ec2:DescribeRouteTables
+          - ec2:DescribeDhcpOptions
+          - ec2:DescribeNetworkInterfaces
+          - ec2:CreateVpcEndpoint
+          - ec2:CreateNetworkInterface
+          - ec2:CreateNetworkInterfacePermission
+          - ec2:DeleteNetworkInterface
+          Resource:
+          - "*"
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W12
+            reason: ECR GetAuthorizationToken is non resource-specific action
+
+  NotebookInstance:
+    Type: AWS::SageMaker::NotebookInstance
+    Properties:
+      DirectInternetAccess: Enabled
+      InstanceType: !Ref SageMakerNotebookInstanceType
+      LifecycleConfigName: !GetAtt LifeCycleConfig.NotebookInstanceLifecycleConfigName
+      NotebookInstanceName: rl-procgen-neurips
+      RoleArn: !GetAtt NotebookInstanceExecutionRole.Arn
+      VolumeSizeInGB: 100
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W1201
+            reason: Solution does not have KMS encryption enabled by default
+
+  LifeCycleConfig:
+    Type: AWS::SageMaker::NotebookInstanceLifecycleConfig
+    Properties:
+      OnStart:
+        - Content:
+            Fn::Base64: !Sub |
+              cd /home/ec2-user/SageMaker
+              sudo chown -R ec2-user:ec2-user *
+              source /home/ec2-user/anaconda3/bin/activate tensorflow2_p36
+              pip install --upgrade pip==20.1.1
+              pip install -r source/requirements.txt
+          
+      OnCreate:
+        - Content:
+            Fn::Base64: !Sub |
+              set -e
+              # Perform following actions as ec2-user.
+              sudo -u ec2-user -i <<EOF
+              cd /home/ec2-user/SageMaker
+              # Copy source files.
+              aws s3 cp s3://sagemaker-solutions-${AWS::Region}/rl-procgen-neurips/sagemaker/ . --recursive
+              aws s3 cp s3://sagemaker-solutions-${AWS::Region}/rl-procgen-neurips/cloudformation/onCreate.sh onCreate.sh
+              
+              # clone the aicrowd starter kit
+              git clone https://github.com/aicrowd/neurips2020-procgen-starter-kit
+
+              # Remove the contents of custom and create symbolic links of the starter kit
+              sudo chmod +x onCreate.sh
+              ./onCreate.sh
+              
+              # Set useful solution specific variables via config file.
+              echo -e "\n" >> config/sagemaker_config.yaml
+              echo "# AWS and solution specific configurations" >> config/sagemaker_config.yaml
+              echo "AWS_ACCOUNT_ID: ${AWS::AccountId}" >> config/sagemaker_config.yaml
+              echo "AWS_REGION: ${AWS::Region}" >> config/sagemaker_config.yaml
+              echo "S3_BUCKET: sm-soln-${S3BucketName}" >> config/sagemaker_config.yaml
+              echo "CPU_TRAINING_INSTANCE: ${SageMakerCPUTrainingInstanceType}" >> config/sagemaker_config.yaml
+              echo "GPU_TRAINING_INSTANCE: ${SageMakerGPUTrainingInstanceType}" >> config/sagemaker_config.yaml
+
+              # Remove unnecessary files and folders
+              rm onCreate.sh
+              rm -r lost+found
+              
+Outputs:
+  NotebookInstanceId:
+    Description: "SageMaker Notebook instance id"
+    Value: !Ref NotebookInstance
+
+  SageMakerNotebookInstanceSignOn:
+    Description: "Link to the SageMaker notebook instance"
+    Value: !Sub "https://console.aws.amazon.com/sagemaker/home?region=${AWS::Region}#/notebook-instances/openNotebook/${NotebookInstance.NotebookInstanceName}?view=classic"

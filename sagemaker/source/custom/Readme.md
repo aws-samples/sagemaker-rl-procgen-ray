@@ -1,0 +1,1 @@
+# Contents of this folder is presented for reference only. SageMaker will automatically update the code from https://github.com/aicrowd/neurips2020-procgen-starter-kit
