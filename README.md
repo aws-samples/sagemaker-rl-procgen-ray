@@ -158,6 +158,7 @@ ModelCatalog.register_custom_model("impala_cnn_tf", ImpalaCNN)
 ```
 
 ## How do I add a custom Algorithm/Trainable/Agent ?
+Please refer to the instructions [here](https://github.com/AIcrowd/neurips2020-procgen-starter-kit/blob/master/experiments/procgen-starter-example.yaml#L4).
 
 
 ## What configs parameters do I have available ? 
@@ -177,10 +178,12 @@ Option 3: Tensorboard
 
 
 # Author(s)
+Amazon SageMaker Reinforcement Learning Notebooks
 - [Anna Luo](https://github.com/annaluo676)
 - [Jonathan Chung](https://github.com/jonomon)
 - [Yunzhe Tao](https://github.com/yunzhe-tao)
 - [Sahika Genc](https://github.com/sahikagenc)
+Starter kit for ProcGen
 - [Sharada Mohanty](https://twitter.com/MeMohanty/)
 - [Karl Cobbe](https://github.com/kcobbe)
 - [Jyotish](https://github.com/jyotishp)
