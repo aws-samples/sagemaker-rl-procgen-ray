@@ -117,12 +117,12 @@ To automatically scale the RL training to several workers, you can adjust the `n
 
 We recommend to use fractional GPUs based on your neural network model. For example, if you are using `neurips2020-procgen-starter-kit/models/impala_cnn_tf.py`, use the following configuration in `source/train-sagemaker.py` for a `p3.2xlarge` instance
 
-'''
+```
   "num_workers": 7, # adjust based on ray_num_cpus
   "num_gpus": 0.2, # adjust based on ray_num_gpus
   "num_gpus_per_worker": 0.1, # adjust based on (ray_num_gpus - num_gpus)/(1 + num_workers)
 
-'''
+```
 
 ## How do I use multiple homogeneous or heteregenous instances for training?
 Amazon SageMaker supports distributed RL in a single Amazon SageMaker ML instance with just a few lines of configuration by using the Ray RLlib library.
@@ -132,13 +132,13 @@ In homogeneous scaling, you use multiple instances with the same type (typically
 With more rollout workers, neural network updates can often become the bottleneck. In this case, you could use heterogeneous scaling, in which you use different instance types together. A typical choice would be to use GPU instances to perform network optimization and CPU instances to collect experiences for faster training at optimized costs. Amazon SageMaker allows you to achieve this by spinning up two jobs within the same Amazon VPC, and the communications between the instances are taken care of automatically.
 
 To run distributed training with multiple instances use `train-homo-distributed.ipynb` and `train-hetero-distributed.ipynb` for homogenous and heteregenous scaling respectively. The configurable parameters for distributed training are stored in `source/train-sagemaker-distributed.py`. Note that you do not have to configure `ray_num_cpus` or `ray_num_gpus`. Remember to scale `num_workers` and `train_batch_size` to reflect the number of instances in the notebook. For example, if you set `train_instance_count = 5` for a `p3.2xlarge` instance, the maximum number of workers will be 39 as follows
-'''
+```
   "num_workers": 8*5 -1, # adjust based on total number of CPUs available in the cluster, e.g., p3.2xlarge has 8 CPUs
   "num_gpus": 0.2, # adjust based on number of GPUs available in a single node, e.g., p3.2xlarge has 1 GPU
   "num_gpus_per_worker": 0.1, # adjust based on number of GPUs, e.g., p3.2x large (1 GPU - num_gpus) / num_workers = 0.1
   "rollout_fragment_length": 140,
   "train_batch_size": 64 * (8*5 -1),
-'''
+```
 
 
 
@@ -153,9 +153,9 @@ To add a custom model, create a file inside `models/` directory and name it `mod
 Please refer [here](https://github.com/AIcrowd/neurips2020-procgen-starter-kit/blob/master/models/my_vision_network.py ) for a working implementation of how to add a custom model. You can then set the `custom_model` field in the experiment yaml to `my_vision_network` to cause that model to be used.
 
 Make sure that the model is registered. If you get an error that your model is not registered, go to `train-sagmaker.py` or `train-sagmaker-distributed.py` and edit `def register_algorithms_and_preprocessors(self)` by adding 
-'''
+```
 ModelCatalog.register_custom_model("impala_cnn_tf", ImpalaCNN)
-'''
+```
 
 ## How do I add a custom Algorithm/Trainable/Agent ?
 
