@@ -30,7 +30,7 @@ As part of the solution, the following services are used:
 1. [Amazon S3](https://aws.amazon.com/s3/): Used to store datasets.
 2. [Amazon SageMaker Notebook](https://aws.amazon.com/sagemaker/): Used to preprocess and visualize the data, and to train the deep learning model.
 
-Amazon SageMaker Reinforcement Learning utilizes [Ray](https://github.com/ray-project/ray) and [RLLib](https://docs.ray.io/en/latest/rllib.html) same as in the starter kit.
+Amazon SageMaker Reinforcement Learning utilizes [Ray](https://github.com/ray-project/ray) and [RLLib](https://docs.ray.io/en/latest/rllib.html) same as in the starter kit. Amazon SageMaker supports distributed RL in a single Amazon SageMaker ML instance with just a few lines of configuration by using the Ray RLlib library.
 
 A typical Amazon SageMaker Reinforcement Learning job for an actro-critic algorithm will use GPU instances to learning a policy network and CPU instances to collect experiences for faster training at optimized costs. Amazon SageMaker allows you to achieve this by spinning up two jobs within the same Amazon VPC, and the communications between the instances are taken care of automatically. The following diagram illustrates the architecture in which the primary job consumes one GPU instance and the secondary job consumes three CPU instances.
 
@@ -125,6 +125,12 @@ We recommend to use fractional GPUs based on your neural network model. For exam
 '''
 
 ## How do I use multiple homogeneous or heteregenous instances for training?
+Amazon SageMaker supports distributed RL in a single Amazon SageMaker ML instance with just a few lines of configuration by using the Ray RLlib library.
+
+In homogeneous scaling, you use multiple instances with the same type (typically CPU instances) for a single Amazon SageMaker job. A single CPU core is reserved for the driver, and you can use all the remaining as rollout workers which generate experiences through environmental simulations. The number of available CPU cores increases with multiple instances. Homogeneous scaling is beneficial when experience collection is the bottleneck of the training workflow; for example, when your environment is computationally heavy.
+
+With more rollout workers, neural network updates can often become the bottleneck. In this case, you could use heterogeneous scaling, in which you use different instance types together. A typical choice would be to use GPU instances to perform network optimization and CPU instances to collect experiences for faster training at optimized costs. Amazon SageMaker allows you to achieve this by spinning up two jobs within the same Amazon VPC, and the communications between the instances are taken care of automatically.
+
 To run distributed training with multiple instances use `train-homo-distributed.ipynb` and `train-hetero-distributed.ipynb` for homogenous and heteregenous scaling respectively. The configurable parameters for distributed training are stored in `source/train-sagemaker-distributed.py`. Note that you do not have to configure `ray_num_cpus` or `ray_num_gpus`. Remember to scale `num_workers` and `train_batch_size` to reflect the number of instances in the notebook. For example, if you set `train_instance_count = 5` for a `p3.2xlarge` instance, the maximum number of workers will be 39 as follows
 '''
   "num_workers": 8*5 -1, # adjust based on total number of CPUs available in the cluster, e.g., p3.2xlarge has 8 CPUs
@@ -133,6 +139,8 @@ To run distributed training with multiple instances use `train-homo-distributed.
   "rollout_fragment_length": 140,
   "train_batch_size": 64 * (8*5 -1),
 '''
+
+
 
 ## How do I use spot instances?
 To use spot instance, you need to set the flag `train_use_spot_instances = False` in the final cell of 
