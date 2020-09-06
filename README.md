@@ -178,11 +178,13 @@ Option 3: Tensorboard
 
 
 # Author(s)
+
 Amazon SageMaker Reinforcement Learning Notebooks
 - [Anna Luo](https://github.com/annaluo676)
 - [Jonathan Chung](https://github.com/jonomon)
 - [Yunzhe Tao](https://github.com/yunzhe-tao)
 - [Sahika Genc](https://github.com/sahikagenc)
+
 Starter kit for ProcGen
 - [Sharada Mohanty](https://twitter.com/MeMohanty/)
 - [Karl Cobbe](https://github.com/kcobbe)
