@@ -30,7 +30,7 @@ As part of the solution, the following services are used:
 1. [Amazon S3](https://aws.amazon.com/s3/): Used to store datasets.
 2. [Amazon SageMaker Notebook](https://aws.amazon.com/sagemaker/): Used to preprocess and visualize the data, and to train the deep learning model.
 
-Amazon SageMaker Reinforcement Learning utilizes Amazon S3, Amazon SageMaker, and ...
+Amazon SageMaker Reinforcement Learning utilizes [Ray](https://github.com/ray-project/ray) and [RLLib](https://docs.ray.io/en/latest/rllib.html) same as in the starter kit.
 
 A typical Amazon SageMaker Reinforcement Learning job for an actro-critic algorithm will use GPU instances to learning a policy network and CPU instances to collect experiences for faster training at optimized costs. Amazon SageMaker allows you to achieve this by spinning up two jobs within the same Amazon VPC, and the communications between the instances are taken care of automatically. The following diagram illustrates the architecture in which the primary job consumes one GPU instance and the secondary job consumes three CPU instances.
 
@@ -89,6 +89,8 @@ To start training the model, go to Amazon SageMaker > Notebook instances > rl-pr
 
 ### Rollout
 
+In your notebook `train.ipynb`, you can use the cells following the training to run evaluations and do rollouts.
+
 
 # Submission [Same as in NeurIPS 2020 - Procgen competition]
 
@@ -109,23 +111,49 @@ Step 1: Prior to changing the instance type you need to confirm that your AWS ac
 
 Step 2: In `train.ipynb`, go to the section titled *Configure training instance type* and override `instance_type`.
 
-Step 3: You need to make sure that your Ray training job is configured to use the resources in the training instance. Go to `source\train-sagemaker.py`. Edit ...
+Step 3: You need to make sure that your Ray training job is configured to use the resources in the training instance. Go to `source\train-sagemaker.py`. 
 
 To automatically scale the RL training to several workers, you can adjust the `num_cpus` and `num_gpus` parameters. You must reserve 1 CPU (the 1 in num_cpus - 1) to act as the driver. For example, if you select a training instance type with at least 4 CPUs, then configure a training job with multiple workers in a single Amazon SageMaker instance by settting 'num_cpus' = 3 and 'num_gpus' = 0.
 
-## How do I use homogeneous or heteregenous distributed training?
+We recommend to use fractional GPUs based on your neural network model. For example, if you are using `neurips2020-procgen-starter-kit/models/impala_cnn_tf.py`, use the following configuration in `source/train-sagemaker.py` for a `p3.2xlarge` instance
 
-## How do I use spot instances for distributed training?
+'''
+  "num_workers": 7, # adjust based on ray_num_cpus
+  "num_gpus": 0.2, # adjust based on ray_num_gpus
+  "num_gpus_per_worker": 0.1, # adjust based on (ray_num_gpus - num_gpus)/(1 + num_workers)
+
+'''
+
+## How do I use multiple homogeneous or heteregenous instances for training?
+To run distributed training with multiple instances use `train-homo-distributed.ipynb` and `train-hetero-distributed.ipynb` for homogenous and heteregenous scaling respectively. The configurable parameters for distributed training are stored in `source/train-sagemaker-distributed.py`. Note that you do not have to configure `ray_num_cpus` or `ray_num_gpus`. Remember to scale `num_workers` and `train_batch_size` to reflect the number of instances in the notebook. For example, if you set `train_instance_count = 5` for a `p3.2xlarge` instance, the maximum number of workers will be 39 as follows
+'''
+  "num_workers": 8*5 -1, # adjust based on total number of CPUs available in the cluster, e.g., p3.2xlarge has 8 CPUs
+  "num_gpus": 0.2, # adjust based on number of GPUs available in a single node, e.g., p3.2xlarge has 1 GPU
+  "num_gpus_per_worker": 0.1, # adjust based on number of GPUs, e.g., p3.2x large (1 GPU - num_gpus) / num_workers = 0.1
+  "rollout_fragment_length": 140,
+  "train_batch_size": 64 * (8*5 -1),
+'''
+
+## How do I use spot instances?
+To use spot instance, you need to set the flag `train_use_spot_instances = False` in the final cell of 
+`train-homo-distributed.ipynb` or `train-hetero-distributed.ipynb`.
+
 
 ## How do I add a custom Model ? [Sahika to update the folder paths]
 To add a custom model, create a file inside `models/` directory and name it `models/my_vision_network.py`.
 
 Please refer [here](https://github.com/AIcrowd/neurips2020-procgen-starter-kit/blob/master/models/my_vision_network.py ) for a working implementation of how to add a custom model. You can then set the `custom_model` field in the experiment yaml to `my_vision_network` to cause that model to be used.
 
+Make sure that the model is registered. If you get an error that your model is not registered, go to `train-sagmaker.py` or `train-sagmaker-distributed.py` and edit `def register_algorithms_and_preprocessors(self)` by adding 
+'''
+ModelCatalog.register_custom_model("impala_cnn_tf", ImpalaCNN)
+'''
+
 ## How do I add a custom Algorithm/Trainable/Agent ?
 
 
 ## What configs parameters do I have available ? 
+All the configuration variables for Ray and RLLib are available in `train-sagmaker.py` for single instance and `train-sagmaker-distributed.py` for training with multiple instances.
 
 
 ## How do I visualize the algorithm metrics while training ?
@@ -137,8 +165,7 @@ Option 1 (Amazon CloudWatch): You can go to the [Amazon CloudWatch](https://aws.
 Option 2 (Amazon SageMaker Python SDK API): You can also visualize the metrics inline in your Amazon SageMaker Jupyter notebooks using the Amazon SageMaker Python SDK APIs. Please, refer to the section titled *Visualize algorithm metrics for training* in `train.ipynb`.
 
 
-Option 3: Tensorboard ... 
-
+Option 3: Tensorboard
 
 
 # Author(s)
