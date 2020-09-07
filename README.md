@@ -190,7 +190,10 @@ Option 1 (Amazon CloudWatch): You can go to the [Amazon CloudWatch](https://aws.
 Option 2 (Amazon SageMaker Python SDK API): You can also visualize the metrics inline in your Amazon SageMaker Jupyter notebooks using the Amazon SageMaker Python SDK APIs. Please, refer to the section titled *Visualize algorithm metrics for training* in `train.ipynb`.
 
 
-Option 3: Tensorboard
+Option 3: To use Tensorboard, you need to setup an s3 bucket to upload data. In `train-homo-distributed.ipynb`, go to the last cell and uncomment
+```
+#"rl.training.upload_dir": s3_output_path + "/tensorboard_sync", # Uncomment to view tensorboard
+```
 
 
 # Author(s)
