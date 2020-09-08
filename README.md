@@ -143,6 +143,8 @@ To run distributed training with multiple instances use `train-homo-distributed.
 ## How do I configure algorithm parameters?
 To configure your RLLib algorithm parameters, go to your notebook folder and open `source/train-sagemaker-distributed-*.py`. A subset of algorithm parameters are provided for PPO but for the full set of algorithm specific parameters, refer to the RLLib documentation, e.g., for [PPO](https://docs.ray.io/en/latest/rllib-algorithms.html#ppo). For baselines provided in the starter kit, refer to `experiments\*.yaml` files and copy additional parameters to the RLLib configuration parameters in the `source/train-sagemaker-distributed-*.py`.
 
+To check whether your model is using the correct parameters, go to the Amazon S3 bucket and navigate to the JSON file with parameters, e.g., `{Amazon SageMaker training job} >output>intermediate>training>{PPO_procgen_env_wrapper_*}>param.json`
+
 
 ## How do I use spot instances?
 To use spot instance, you need to set the flag `train_use_spot_instances = False` in the final cell of 
