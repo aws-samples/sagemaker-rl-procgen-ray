@@ -46,14 +46,13 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
         }
 
     def _get_rllib_config(self):
-        hyper_parameters = json.loads(os.environ.get("SM_HPS", "{}"))
         return {
             "experiment_name": "training",
             "run": "PPO",
             "env": "procgen_env_wrapper",
             "stop": {
-                # 'time_total_s': 60,
-                'training_iteration': 10,
+                #'time_total_s': 60,
+                'training_iteration': 4000,
                 },
             "checkpoint_freq": 1,
             "config": {
@@ -61,16 +60,16 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
                 "gamma": 0.999,
                 "kl_coeff": 0.2,
                 "lambda": 0.9,
-                "lr": 0.0005,
-                "num_workers": 16 * 2 - 1, # adjust based on total number of CPUs available in the cluster
-                "num_gpus": 0, # adjust based on number of GPUs available in a single node
+                "lr": 0.0001,
+                "num_workers": 8*2 -1, # adjust based on total number of CPUs available in the cluster, e.g., p3.2xlarge has 8 CPUs
+                "num_gpus": 0.2, # adjust based on number of GPUs available in a single node, e.g., p3.2xlarge has 1 GPU
+                "num_gpus_per_worker": 0.1, # adjust based on number of GPUs, e.g., p3.2x large (1 GPU - num_gpus) / num_workers = 0.1
                 "rollout_fragment_length": 140,
-                "train_batch_size": 2048,
+                "train_batch_size": 256 * (8*2 -1),
                 "batch_mode": "truncate_episodes",
-                "num_sgd_iter": 3,
+                "num_sgd_iter": 10,
                 "model": {
-                    "custom_model": "my_vision_network",
-                    "conv_filters": [[16, [5, 5], 4], [32, [3, 3], 1], [256, [3, 3], 1]],
+                   "custom_model": "impala_cnn_tf",
                 },
                 "env_config": {
                     # See https://github.com/AIcrowd/neurips2020-procgen-starter-kit/blob/master/experiments/procgen-starter-example.yaml#L34 for an explaination.
@@ -86,31 +85,33 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
             },
             "queue_trials": True,
             # Uncomment if you want to use a config_file
-            # "config_file": hyper_parameters["config_file"]
+            # Note that this overrides any options set above
+            # "config_file": path/to/your/config/file
         }
     
     def register_algorithms_and_preprocessors(self):
-        # TODO(annaluo@): register custom model via dynamic sourcing
         try:
             from custom.algorithms import CUSTOM_ALGORITHMS
             from custom.preprocessors import CUSTOM_PREPROCESSORS
             from custom.models.my_vision_network import MyVisionNetwork
+            from custom.models.impala_cnn_tf import ImpalaCNN
         except ModuleNotFoundError:
             from algorithms import CUSTOM_ALGORITHMS
             from preprocessors import CUSTOM_PREPROCESSORS
             from models.my_vision_network import MyVisionNetwork
+            from models.impala_cnn_tf import ImpalaCNN
 
         load_algorithms(CUSTOM_ALGORITHMS)
         
         load_preprocessors(CUSTOM_PREPROCESSORS)
         ModelCatalog.register_custom_model("my_vision_network", MyVisionNetwork)
+        ModelCatalog.register_custom_model("impala_cnn_tf", ImpalaCNN)
     
     def get_experiment_config(self):
         params = dict(self._get_ray_config())
         params.update(self._get_rllib_config())
         reb = RayExperimentBuilder(**params)
         return reb.get_experiment_definition()
-
 
 if __name__ == "__main__":
     MyLauncher().train_main()

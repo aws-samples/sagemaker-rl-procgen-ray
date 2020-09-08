@@ -171,7 +171,7 @@ class SageMakerRayLauncher(object):
                                  shell=True,
                                  stderr=subprocess.STDOUT)
 
-        time.sleep(3)
+        time.sleep(30)
         if p.poll() != 0:
             raise RuntimeError("Could not start Ray server.")
 
@@ -182,7 +182,7 @@ class SageMakerRayLauncher(object):
         else:
             p = subprocess.Popen("ray start --redis-address=%s:6379 --node-ip-address=%s" % (master_ip, node_ip),
                                 shell=True, stderr=subprocess.STDOUT)
-        time.sleep(3)
+        time.sleep(30)
         if p.poll() != 0:
             raise RuntimeError("Could not join Ray server running at %s:6379" % master_ip)
 
@@ -195,7 +195,7 @@ class SageMakerRayLauncher(object):
                 for filename in filenames:
                     if filename.startswith("checkpoint"):
                         checkpoints.append(os.path.join(root, filename))
-            time.sleep(5)
+            time.sleep(50)
             if count >= 6:
                 raise RuntimeError("Failed to find checkpoint files")
 

@@ -87,7 +87,7 @@ class SageClusterCommunicator():
         s3_client = self.get_client()
         self._wait_for_ip_upload()
         # Wait for new IP address if using spot instace
-        time.sleep(5)
+        time.sleep(20)
         try:
             s3_client.download_file(self.s3_bucket, self._get_s3_key(self.ip_key), 'ip.json')
             with open("ip.json") as f:
@@ -98,7 +98,7 @@ class SageClusterCommunicator():
         except Exception as e:
             raise RuntimeError("Cannot fetch IP of redis server running in SageMaker:", e)
 
-    def _wait_for_ip_upload(self, timeout=600):
+    def _wait_for_ip_upload(self, timeout=1200):
         s3_client = self.get_client()
         time_elapsed = 0
         while True:
