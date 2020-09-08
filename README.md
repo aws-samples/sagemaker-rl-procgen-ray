@@ -140,6 +140,8 @@ To run distributed training with multiple instances use `train-homo-distributed.
   "train_batch_size": 64 * (8*5 -1),
 ```
 
+## How do I configure algorithm parameters?
+To configure your RLLib algorithm parameters, go to your notebook folder and open `source/train-sagemaker-distributed-*.py`. A subset of algorithm parameters are provided for PPO but for the full set of algorithm specific parameters, refer to the RLLib documentation, e.g., for [PPO](https://docs.ray.io/en/latest/rllib-algorithms.html#ppo). For baselines provided in the starter kit, refer to `experiments\*.yaml` files and copy additional parameters to the RLLib configuration parameters in the `source/train-sagemaker-distributed-*.py`.
 
 
 ## How do I use spot instances?
@@ -147,7 +149,7 @@ To use spot instance, you need to set the flag `train_use_spot_instances = False
 `train-homo-distributed.ipynb` or `train-hetero-distributed.ipynb`.
 
 
-## How do I add a custom Model ? [Sahika to update the folder paths]
+## How do I add a custom Model ? 
 To add a custom model, create a file inside `models/` directory and name it `models/my_vision_network.py`.
 
 Please refer [here](https://github.com/AIcrowd/neurips2020-procgen-starter-kit/blob/master/models/my_vision_network.py ) for a working implementation of how to add a custom model. You can then set the `custom_model` field in the experiment yaml to `my_vision_network` to cause that model to be used.
