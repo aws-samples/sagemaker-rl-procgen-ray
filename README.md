@@ -1,8 +1,8 @@
 # NeurIPS 2020 - Procgen Starter Kit with Amazon SageMaker Reinforcement Learning
 This is the Amazon SageMaker Reinforcement Learning starter kit for the [NeurIPS 2020 - Procgen competition](https://www.aicrowd.com/challenges/neurips-2020-procgen-competition) hosted on [AIcrowd](https://www.aicrowd.com/).
-​
+
 Amazon SageMaker is a fully managed service that enables you to build and deploy models faster and with less heavy lifting. Amazon SageMaker has built-in features to assist with data labeling and preparation; training, tuning and debugging models; and deploying and monitoring models in production. This notebook uses the fully managed RL capabilities in Amazon SageMaker, which include pre-packaged RL toolkits and fully managed model training and deployment and builds on top of the algorithms and libraries of the [NeurIPS 2020 - Procgen competition](https://www.aicrowd.com/challenges/neurips-2020-procgen-competition) hosted on [AIcrowd](https://www.aicrowd.com/) Additionally, Amazon SageMaker Managed Spot Training is used to reduce training costs by up to 90%. 
-​
+
 For more information, see Amazon SageMaker Experiments – Organize, Track And Compare Your Machine Learning Trainings. For more information about applying RL to domains such as recommendation systems, robotics, financial management, and more, see the [GitHub repo](https://github.com/awslabs/amazon-sagemaker-examples/tree/master/reinforcement_learning).
 
 # 🕵️ About ProcGen Benchmark
@@ -35,7 +35,6 @@ Amazon SageMaker Reinforcement Learning utilizes [Ray](https://github.com/ray-pr
 A typical Amazon SageMaker Reinforcement Learning job for an actro-critic algorithm will use GPU instances to learning a policy network and CPU instances to collect experiences for faster training at optimized costs. Amazon SageMaker allows you to achieve this by spinning up two jobs within the same Amazon VPC, and the communications between the instances are taken care of automatically. The following diagram illustrates the architecture in which the primary job consumes one GPU instance and the secondary job consumes three CPU instances.
 
 <img src="docs/BattleSnake-RL-4.gif" height="400">
-
 
 ### Cost
 
@@ -160,21 +159,6 @@ Make sure that the model is registered. If you get an error that your model is n
 ```
 ModelCatalog.register_custom_model("impala_cnn_tf", ImpalaCNN)
 ```
-
-Finally, you need to make sure the Amazon SageMaker `RLEstimator` function using the YAML file associated with your model. To do that uncomment ``config_file: config_file_location`` in hyperparameters. For example, for ImpalaCNN, use
-
-```
-config_file_location = "experiments/impala-baseline.yaml"
-
-hyperparameters = {
-            #"rl.training.upload_dir": s3_output_path + "/tensorboard_sync", # Uncomment to view tensorboard
-            "rl.training.config.env_config.env_name": env,
-            "config_file": config_file_location
-        }
-
-``` 
-in the last cell of ``train-homo-distributed.ipynb``.
-
 
 
 ## How do I add a custom Algorithm/Trainable/Agent ?
