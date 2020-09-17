@@ -68,6 +68,7 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
                 "train_batch_size": 256 * (8*2 -1),
                 "batch_mode": "truncate_episodes",
                 "num_sgd_iter": 10,
+                "use_pytorch": False,
                 "model": {
                    "custom_model": "impala_cnn_tf",
                 },

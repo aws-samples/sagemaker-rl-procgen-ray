@@ -59,19 +59,20 @@ class ProcgenSageMakerRayLauncher(SageMakerRayLauncher):
         cls = get_agent_class(algorithm)
         with open(os.path.join(MODEL_OUTPUT_DIR, "params.json")) as config_json:
             config = json.load(config_json)
-        ### eval custom callbacks ###
-        if 'callbacks' in config:
-            callback_cls_str = config['callbacks'] # "<class 'custom.callbacks.CustomCallbacks'>",
-            callback_cls = callback_cls_str.split("'")[-2].split(".")[-1] # CustomCallbacks
-            config['callbacks'] = eval(callback_cls)
-        print("Loaded config for TensorFlow serving.")
-        config["monitor"] = False
-        config["num_workers"] = 1
-        config["num_gpus"] = 0
-        agent = cls(env=env_string, config=config)
-        checkpoint = os.path.join(MODEL_OUTPUT_DIR, "checkpoint")
-        agent.restore(checkpoint)
-        export_tf_serving(agent, MODEL_OUTPUT_DIR)
+        use_torch = config.get("use_pytorch", False)
+        if not use_torch:
+            if 'callbacks' in config:
+                callback_cls_str = config['callbacks'] # "<class 'custom.callbacks.CustomCallbacks'>",
+                callback_cls = callback_cls_str.split("'")[-2].split(".")[-1] # CustomCallbacks
+                config['callbacks'] = eval(callback_cls)
+            print("Loaded config for TensorFlow serving.")
+            config["monitor"] = False
+            config["num_workers"] = 1
+            config["num_gpus"] = 0
+            agent = cls(env=env_string, config=config)
+            checkpoint = os.path.join(MODEL_OUTPUT_DIR, "checkpoint")
+            agent.restore(checkpoint)
+            export_tf_serving(agent, MODEL_OUTPUT_DIR)
 
     def find_checkpoint_path_for_spot(self, prefix):
         ckpts = []
@@ -141,11 +142,6 @@ class ProcgenSageMakerRayLauncher(SageMakerRayLauncher):
         # If distributed job, send TERMINATION_SIGNAL to all workers.
         if len(all_wokers_host_names) > 0:
             self.sage_cluster_communicator.create_s3_signal(TERMINATION_SIGNAL)
-
-        algo = experiment_config["training"]["run"]
-        env_string = experiment_config["training"]["config"]["env"]
-        self.save_checkpoint_and_serving_model(algorithm=algo,
-                                               env_string=env_string)
 
     @classmethod
     def train_main(cls):

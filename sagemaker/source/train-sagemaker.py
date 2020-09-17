@@ -45,14 +45,13 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
         }
 
     def _get_rllib_config(self):
-        hyper_parameters = json.loads(os.environ.get("SM_HPS", "{}"))
         return {
             "experiment_name": "training",
             "run": "PPO",
             "env": "procgen_env_wrapper",
             "stop": {
                 # 'time_total_s': 60,
-                'training_iteration': 10,
+                'training_iteration': 15,
                 },
             "checkpoint_freq": 1,
             "config": {
@@ -66,6 +65,7 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
                 "train_batch_size": 2048,
                 "batch_mode": "truncate_episodes",
                 "num_sgd_iter": 3,
+                "use_pytorch": False,
                 "model": {
                     "custom_model": "my_vision_network",
                     "conv_filters": [[16, [5, 5], 4], [32, [3, 3], 1], [256, [3, 3], 1]],
@@ -101,7 +101,7 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
         
         load_preprocessors(CUSTOM_PREPROCESSORS)
         ModelCatalog.register_custom_model("my_vision_network", MyVisionNetwork)
-    
+
     def get_experiment_config(self):
         params = dict(self._get_ray_config())
         params.update(self._get_rllib_config())

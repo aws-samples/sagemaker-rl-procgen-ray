@@ -303,6 +303,12 @@ Resources:
             Fn::Base64: !Sub |
               cd /home/ec2-user/SageMaker
               sudo chown -R ec2-user:ec2-user *
+              # Install required dependencies for PyTorch virtualenv
+              source /home/ec2-user/anaconda3/bin/activate pytorch_p36
+              pip install --upgrade pip==20.1.1
+              pip install -r source/requirements.txt
+              source /home/ec2-user/anaconda3/bin/deactivate
+              # Install required dependencies for TensorFlow virtualenv
               source /home/ec2-user/anaconda3/bin/activate tensorflow2_p36
               pip install --upgrade pip==20.1.1
               pip install -r source/requirements.txt
@@ -320,6 +326,7 @@ Resources:
               
               # clone the aicrowd starter kit
               git clone https://github.com/aicrowd/neurips2020-procgen-starter-kit
+              sed -i '/tensorflow==2.1.0/d' neurips2020-procgen-starter-kit/requirements.txt
 
               # Remove the contents of custom and create symbolic links of the starter kit
               sudo chmod +x onCreate.sh

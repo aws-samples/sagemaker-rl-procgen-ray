@@ -67,6 +67,7 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
                 "train_batch_size": 2048,
                 "batch_mode": "truncate_episodes",
                 "num_sgd_iter": 10,
+                "use_pytorch": False,
                 "model": {
 #                     "custom_model": "my_vision_network",
 #                     "conv_filters": [[16, [5, 5], 4], [32, [3, 3], 1], [256, [3, 3], 1]],
