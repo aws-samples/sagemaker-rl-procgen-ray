@@ -100,6 +100,24 @@ Happy Submitting!! :rocket:
 ​
 # FAQs
 
+## How long does it take to reach 8MM steps for various training instance types?
+The AWS CloudFormation will help you get started with a GPU instance `ml.p3.2xlarge`. This instance has 1 GPU and 8 vCPUs. We benchmarked our notebook with configuration in `experiments\impala-baseline.yaml` and neural network in `models\impala_cnn_tf.py` on `ml.p3.2xlarge` instance. With 70% spot instance savings, running the IMPALA benchmark costs about $1.0 based on September 2020 rates. 
+
+<img src="docs/impala_benchmark_baseline_p3_2x.png" height="512">
+
+Next, we run the baseline `experiments\impala-baseline.yaml` on other GPU instance to help reduce cost or increase performance. Below is a table comparing various instances to the IMPALA baseline.
+
+<img src="docs/Table_CompareInstances.png" height="512">
+
+The corresponding mean episode for each configuration (column) in the above table for BigFish environment up to 8MM steps is shown below.
+
+<img src="docs/impala_benchmark_instances.png" height="512">
+
+The key takeaways are:
+* Switching to `ml.g4n.4xlarge` will help you save 40% per environment at the cost of increasing the training time from 45 minutes to about an hour.
+* Switching to `ml.p3.8xlarge` is more cost effective than scaling to multiple instances of `ml.p3.2xlarge`. You can further reduce training time to less than 25 minutes by increasing `num_envs_per_worker` from 12 to 48 and scaling for `num_gpus` to avoid out-of-memory errors.
+
+
 ## How do I change the notebook instance type?
 The Amazon SageMaker notebook instance type is configured as part of the cloud formation parameters. The default instance type in the cloud formation stack is `ml.c5.4xlarge`. If you wish to change the instance type, you would need to change the parameter for the notebook instance. This instance type enables you to run your notebook in `local mode` to quickly test your custom model, parameters, or algorithms in the notebook instance. We recommended that once you debug customizations, then you can switch to a notebook instance with smaller compute and use powerful compute instances to iterate through various hyper-parameters in training.
 
