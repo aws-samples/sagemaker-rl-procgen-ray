@@ -103,7 +103,7 @@ Happy Submitting!! :rocket:
 ## How long does it take to reach 8MM steps for various training instance types?
 The AWS CloudFormation will help you get started with a GPU instance `ml.p3.2xlarge`. This instance has 1 GPU and 8 vCPUs. We benchmarked our notebook with configuration in `experiments\impala-baseline.yaml` and neural network in `models\impala_cnn_tf.py` on `ml.p3.2xlarge` instance. With 70% spot instance savings, running the IMPALA benchmark costs about $1.0 based on September 2020 rates. 
 
-<img src="docs/impala_benchmark_baseline_p3_2x.png" height="512">
+<img src="docs/impala_benchmark_baseline_p3_2x.png" height="800">
 
 Next, we run the baseline `experiments\impala-baseline.yaml` on other GPU instance to help reduce cost or increase performance. Below is a table comparing various instances to the IMPALA baseline.
 
@@ -111,7 +111,7 @@ Next, we run the baseline `experiments\impala-baseline.yaml` on other GPU instan
 
 The corresponding mean episode for each configuration (column) in the above table for BigFish environment up to 8MM steps is shown below.
 
-<img src="docs/impala_benchmark_instances.png" height="128">
+<img src="docs/impala_benchmark_instances.png" height="200">
 
 The key take-aways are:
 * Switching to `ml.g4n.4xlarge` will help you save 40% per environment at the cost of increasing the training time from 45 minutes to about an hour.
