@@ -107,11 +107,11 @@ The AWS CloudFormation will help you get started with a GPU instance `ml.p3.2xla
 
 Next, we run the baseline `experiments\impala-baseline.yaml` on other GPU instance to help reduce cost or increase performance. Below is a table comparing various instances to the IMPALA baseline.
 
-<img src="docs/Table_CompareInstances.png" height="512">
+<img src="docs/Table_CompareInstances.png" height="256">
 
 The corresponding mean episode for each configuration (column) in the above table for BigFish environment up to 8MM steps is shown below.
 
-<img src="docs/impala_benchmark_instances.png" height="512">
+<img src="docs/impala_benchmark_instances.png" height="128">
 
 The key takeaways are:
 * Switching to `ml.g4n.4xlarge` will help you save 40% per environment at the cost of increasing the training time from 45 minutes to about an hour.
