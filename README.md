@@ -113,7 +113,7 @@ The corresponding mean episode for each configuration (column) in the above tabl
 
 <img src="docs/impala_benchmark_instances.png" height="128">
 
-The key takeaways are:
+The key take-aways are:
 * Switching to `ml.g4n.4xlarge` will help you save 40% per environment at the cost of increasing the training time from 45 minutes to about an hour.
 * Switching to `ml.p3.8xlarge` is more cost effective than scaling to multiple instances of `ml.p3.2xlarge`. You can further reduce training time to less than 25 minutes by increasing `num_envs_per_worker` from 12 to 48 and scaling for `num_gpus` to avoid out-of-memory errors.
 
