@@ -11,6 +11,8 @@
 # express or implied. See the License for the specific language governing 
 # permissions and limitations under the License.
 
+import os
+from pathlib import Path
 import argparse
 import json
 import yaml
@@ -36,13 +38,12 @@ class RayExperimentBuilder:
         """
     def __init__(self, **kwargs):
         parser = self.create_parser()
-
         self.args, _ = parser.parse_known_args()
         
         if kwargs is not None:
             for k, v in kwargs.items():
                 self.args.__dict__[k] = v
-        
+
         # Convert jsons to dicts in local mode
         self.args.scheduler_config = self.try_convert_json_to_dict(self.args.scheduler_config)
         self.args.config = self.try_convert_json_to_dict(self.args.config)
@@ -296,9 +297,9 @@ class RayExperimentBuilder:
                 exp["config"]["input"] = str(input_file)
             
             if not exp.get("run"):
-                parser.error("the following arguments are required: --run")
+                raise ValueError("The following arguments are required: run")
             if not exp.get("env") and not exp.get("config", {}).get("env"):
-                parser.error("the following arguments are required: --env")
+                raise ValueError("The following arguments are required: env")
 
             if self.args.eager:
                 exp["config"]["eager"] = True

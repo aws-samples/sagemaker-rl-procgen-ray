@@ -21,12 +21,31 @@ Parameters:
       - ml.c5.4xlarge
       - ml.c5.9xlarge
   SageMakerGPUTrainingInstanceType:
-    Description: GPU Instance type of the SageMaker heterogeneous training jobs
+    Description: GPU Instance type of the SageMaker distributed training jobs
     Type: String
     Default:  "ml.p3.2xlarge"
     AllowedValues:
       - ml.p3.2xlarge
       - ml.g4dn.4xlarge
+  ShouldAddBudgetNotification:
+    Description: Creates a budget notification when you are running low (10% remaining) on AWS credits.
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+  BudgetAmount:
+    Description: Amount (in USD) of AWS credits that you have available (could be changed later).
+    Type: Number
+    Default: 500
+
+  BudgetNotificationEmail:
+    Description: Optional parameter that is only required if you require a budget notification.
+    Type: String
+
+Conditions:
+  CreateBudgetNofication: !Equals [ !Ref ShouldAddBudgetNotification, 'true' ]
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -34,15 +53,24 @@ Metadata:
         Label:
           default: S3 Configuration
         Parameters:
-          - SolutionS3BucketName
+          - S3BucketName
       -
         Label:
           default: SageMaker Configuration
         Parameters:
           - SageMakerNotebookInstanceType
-          - SageMakerTrainingInstanceType
+          - SageMakerCPUTrainingInstanceType
+          - SageMakerGPUTrainingInstanceType
+      -
+        Label:
+          default: Budget notification configurations
+        Parameters:
+          - ShouldAddBudgetNotification
+          - BudgetAmount
+          - BudgetNotificationEmail
+          
     ParameterLabels:
-      SolutionS3BucketName:
+      S3BucketName:
         default: Bucket Name
       SageMakerNotebookInstanceType:
         default: SageMaker Notebook Instance
@@ -50,6 +78,12 @@ Metadata:
         default: SageMaker CPU Training Instance
       SageMakerGPUTrainingInstanceType:
         default: SageMaker GPU Training Instance
+      ShouldAddBudgetNotification:
+        default: Should a budget notification be created?
+      BudgetAmount:
+        default: Available credits.
+      BudgetNotificationEmail:
+        default: An email to send a reminder to when your budget is running low.
 
 Mappings:
   S3:
@@ -344,7 +378,29 @@ Resources:
               # Remove unnecessary files and folders
               rm onCreate.sh
               rm -r lost+found
-              
+
+  BudgetNotification:
+    Type: "AWS::Budgets::Budget"
+    Condition: CreateBudgetNofication
+    Properties:
+      Budget:
+        BudgetName: procgen-sagemaker-BudgetNotification
+        BudgetLimit:
+          Amount: !Ref BudgetAmount
+          Unit: USD
+        TimeUnit: MONTHLY
+        BudgetType: COST
+        TimePeriod:
+          Start: 1600387200
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 90
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref BudgetNotificationEmail
+  
 Outputs:
   NotebookInstanceId:
     Description: "SageMaker Notebook instance id"
