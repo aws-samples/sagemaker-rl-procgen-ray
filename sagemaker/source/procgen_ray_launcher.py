@@ -36,6 +36,8 @@ MODEL_OUTPUT_DIR = "/opt/ml/model"
 CHECKPOINTS_DIR = '/opt/ml/checkpoints'
 
 def custom_sync_func(source, target):
+    """Custom rsync cmd to sync experiment artifact from remote nodes to driver node.
+    """
     sync_cmd = 'rsync -havP --inplace --stats -e "ssh -i /root/.ssh/id_rsa" {source} {target}'.format(
         source=source, target=target
     )
@@ -45,7 +47,31 @@ def custom_sync_func(source, target):
 
 
 class ProcgenSageMakerRayLauncher(SageMakerRayLauncher):
-        
+    """Launcher class for Procgen experiments using Ray-RLLib.
+    Customers should sub-class this, fill in the required methods, and
+    call .train_main() to start a training process.
+
+    Example::
+
+        class MyLauncher(ProcgenSageMakerRayLauncher):
+            def register_env_creator(self):
+                register_env(
+                    "stacked_procgen_env",  # This should be different from procgen_env_wrapper
+                    lambda config: gym.wrappers.FrameStack(ProcgenEnvWrapper(config), 4)
+                )
+
+            def get_experiment_config(self):
+                return {
+                  "training": {
+                    "env": "procgen_env_wrapper",
+                    "run": "PPO",
+                    ...
+                  }
+                }
+
+        if __name__ == "__main__":
+            MyLauncher().train_main()
+    """
     def register_algorithms_and_preprocessors(self):
         raise NotImplementedError()
 
@@ -95,6 +121,8 @@ class ProcgenSageMakerRayLauncher(SageMakerRayLauncher):
             return os.path.join(ckpts_prefix, ckpts[-1], ckpt_name)
 
     def launch(self):
+        """Actual entry point into the class instance where everything happens.
+        """
         self.register_env_creator()
         self.register_algorithms_and_preprocessors()
         experiment_config, args, verbose = self.get_experiment_config()

@@ -38,8 +38,8 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
 
     def _get_ray_config(self):
         return {
-            "ray_num_cpus": 16, # adjust based on selected instance type
-            "ray_num_gpus": 0,
+            "ray_num_cpus": 8, # adjust based on selected instance type
+            "ray_num_gpus": 1,
             "eager": False,
              "v": True, # requried for CW to catch the progress
         }
@@ -51,25 +51,56 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
             "env": "procgen_env_wrapper",
             "stop": {
                 # 'time_total_s': 60,
-                'training_iteration': 15,
+                'training_iteration': 500,
                 },
-            "checkpoint_freq": 1,
+            "checkpoint_freq": 20,
+            "checkpoint_at_end": True,
+            "keep_checkpoints_num": 5,
+            "queue_trials": False,
             "config": {
+                # === Environment Settings ===
                 "gamma": 0.999,
-                "kl_coeff": 0.2,
-                "lambda": 0.9,
-                "lr": 0.0005,
-                "num_workers": 15, # adjust based on ray_num_cpus
-                "num_gpus": 0, # adjust based on ray_num_gpus
-                "rollout_fragment_length": 140,
-                "train_batch_size": 2048,
-                "batch_mode": "truncate_episodes",
+                "lambda": 0.95,
+                "lr": 5.0e-4,
                 "num_sgd_iter": 3,
+                "kl_coeff": 0.0,
+                "kl_target": 0.01,
+                "vf_loss_coeff": 0.5,
+                "entropy_coeff": 0.01,
+                "clip_param": 0.2,
+                "vf_clip_param": 0.2,
+                "grad_clip": 0.5,
+                "observation_filter": "NoFilter",
+                "vf_share_layers": True,
+                "soft_horizon": False,
+                "no_done_at_end": False,
+                "normalize_actions": False,
+                "clip_actions": True,
+                "ignore_worker_failures": True,
                 "use_pytorch": False,
+                "sgd_minibatch_size": 2048, # 8 minibatches per epoch
+                "train_batch_size": 16384, # 2048 * 8
+                # === Settings for Model ===
                 "model": {
-                    "custom_model": "my_vision_network",
-                    "conv_filters": [[16, [5, 5], 4], [32, [3, 3], 1], [256, [3, 3], 1]],
+                    "custom_model": "impala_cnn_tf",
                 },
+                # === Settings for Rollout Worker processes ===
+                "num_workers": 6, # adjust based on total number of CPUs available in the cluster, e.g., p3.2xlarge has 8 CPUs
+                "rollout_fragment_length": 140,
+                "batch_mode": "truncate_episodes",
+                # === Advanced Resource Settings ===
+                "num_envs_per_worker": 12,
+                "num_cpus_per_worker": 1,
+                "num_cpus_for_driver": 1,
+                "num_gpus_per_worker": 0.1,
+                # === Settings for the Trainer process ===
+                "num_gpus": 0.3, # adjust based on number of GPUs available in a single node, e.g., p3.2xlarge has 1 GPU
+                # === Exploration Settings ===
+                "explore": True,
+                "exploration_config": {
+                    "type": "StochasticSampling",
+                },
+                # === Settings for the Procgen Environment ===
                 "env_config": {
                     # See https://github.com/AIcrowd/neurips2020-procgen-starter-kit/blob/master/experiments/procgen-starter-example.yaml#L34 for an explaination.
                     "env_name": "coinrun",
@@ -81,26 +112,22 @@ class MyLauncher(ProcgenSageMakerRayLauncher):
                     "use_sequential_levels": False,
                     "distribution_mode": "easy"
                 }
-            },
-            # Uncomment if you want to use a config_file
-            # "config_file": hyper_parameters["config_file"]
+            }
         }
     
     def register_algorithms_and_preprocessors(self):
-        # TODO(annaluo@): register custom model via dynamic sourcing
         try:
             from custom.algorithms import CUSTOM_ALGORITHMS
             from custom.preprocessors import CUSTOM_PREPROCESSORS
-            from custom.models.my_vision_network import MyVisionNetwork
+            from custom.models.impala_cnn_tf import ImpalaCNN
         except ModuleNotFoundError:
             from algorithms import CUSTOM_ALGORITHMS
             from preprocessors import CUSTOM_PREPROCESSORS
-            from models.my_vision_network import MyVisionNetwork
+            from models.impala_cnn_tf import ImpalaCNN
 
         load_algorithms(CUSTOM_ALGORITHMS)
-        
         load_preprocessors(CUSTOM_PREPROCESSORS)
-        ModelCatalog.register_custom_model("my_vision_network", MyVisionNetwork)
+        ModelCatalog.register_custom_model("impala_cnn_tf", ImpalaCNN)
 
     def get_experiment_config(self):
         params = dict(self._get_ray_config())
