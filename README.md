@@ -7,7 +7,7 @@ For more information, see Amazon SageMaker Experiments – Organize, Track And C
 
 # 🕵️ About ProcGen Benchmark
 
-16 simple-to-use procedurally-generated [gym](https://github.com/openai/gym) environments which provide a direct measure of how quickly a reinforcement learning agent learns generalizable skills.  The environments run at high speed (thousands of steps per second) on a single core.
+The [ProcGen](https://github.com/openai/procgen) environment is a 16 simple-to-use procedurally-generated [gym](https://github.com/openai/gym) environments which provide a direct measure of how quickly a reinforcement learning agent learns generalizable skills.  The environments run at high speed (thousands of steps per second) on a single core.
 
 ![](https://raw.githubusercontent.com/openai/procgen/master/screenshots/procgen.gif)
 
@@ -16,6 +16,8 @@ These environments are associated with the paper [Leveraging Procedural Generati
 * Faster: Gym Retro environments are already fast, but Procgen environments can run >4x faster.
 * Non-deterministic: Gym Retro environments are always the same, so you can memorize a sequence of actions that will get the highest reward.  Procgen environments are randomized so this is not possible.
 * Customizable: If you install from source, you can perform experiments where you change the environments, or build your own environments.  The environment-specific code for each environment is often less than 300 lines.  This is almost impossible with Gym Retro.
+
+Asset information of the procgen environment could be found [here](https://github.com/openai/procgen/blob/master/ASSET_LICENSES.md).
 
 # 💪 Getting Started with Amazon SageMaker 
 
