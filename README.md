@@ -64,12 +64,13 @@ While logged on to your AWS account, click on the link to quick create the AWS C
     <td>Oregon</td>
     <td>us-west-2</td>
     <td align="center">
-      <a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create/review?templateURL=https://sagemaker-solutions-us-west-2.s3-us-west-2.amazonaws.com/rl-procgen-neurips/cloudformation/sagemaker.yaml&stackName=sm-soln-rl-procgen-neuips">
+      <a href="https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create/review?templateURL=https://sagemaker-solutions-prod-us-west-2.s3-us-west-2.amazonaws.com/rl-procgen-neurips/deployment/sagemaker.yaml&stackName=sagemaker-soln-rl-procgen-neuips">
         <img src="docs/launch_button.svg" height="30">
       </a>
     </td>
   </tr>
 </table>
+
 
 
 The above link will take you to the AWS CloudFormation page to create a stack as seen in the screen shot below.
@@ -86,11 +87,7 @@ You are now ready to start training!
 
 ### Training
 
-To start training the model, go to Amazon SageMaker > Notebook instances > rl-procgen-neurips and click `Open Jupyter` or `Open JupyterLab` tab. Then, click on the  notebook named `train.ipynb`.
-
-### Rollout
-
-In your notebook `train.ipynb`, you can use the cells following the training to run evaluations and do rollouts.
+To start training the model, go to Amazon SageMaker > Notebook instances > rl-procgen-neurips and click `Open Jupyter` or `Open JupyterLab` tab. Then, click on the  notebook named `1_train.ipynb`.
 
 
 # Submission [Same as in NeurIPS 2020 - Procgen competition]
@@ -128,7 +125,7 @@ You can change the instance type to a GPU or CPU instance. In the notebook, the 
 
 Step 1: Prior to changing the instance type you need to confirm that your AWS account limit for the specific instance. Please, refer to the instructions on the [Amazon EC2 Service Quotas](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html) on how to confirm the instance limits.
 
-Step 2: In `train.ipynb`, go to the section titled *Configure training instance type* and override `instance_type`.
+Step 2: In `1_train.ipynb`, go to the section titled *Configure training instance type* and override `instance_type`.
 
 Step 3: You need to make sure that your Ray training job is configured to use the resources in the training instance. Go to `source\train-sagemaker.py`. 
 
@@ -195,7 +192,7 @@ There are several options to visualize algorithm metrics. A detailed blog can be
 
 Option 1 (Amazon CloudWatch): You can go to the [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) metrics dashboard from your account to monitor and visualize the algorithm metrics as well as track the GPU and CPU usage. The training jobs details page has a direct link to the Amazon CloudWatch metrics dashboard for the metrics emitted by the training algorithm.
 
-Option 2 (Amazon SageMaker Python SDK API): You can also visualize the metrics inline in your Amazon SageMaker Jupyter notebooks using the Amazon SageMaker Python SDK APIs. Please, refer to the section titled *Visualize algorithm metrics for training* in `train.ipynb`.
+Option 2 (Amazon SageMaker Python SDK API): You can also visualize the metrics inline in your Amazon SageMaker Jupyter notebooks using the Amazon SageMaker Python SDK APIs. Please, refer to the section titled *Visualize algorithm metrics for training* in `1_train.ipynb`.
 
 
 Option 3: To use Tensorboard, you need to setup an s3 bucket to upload data. In `train-homo-distributed.ipynb`, go to the last cell and uncomment
