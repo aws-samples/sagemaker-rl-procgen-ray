@@ -1,2 +1,2 @@
-ray[rllib]==0.8.5
+ray[rllib]==2.56.0
 procgen==0.10.1
